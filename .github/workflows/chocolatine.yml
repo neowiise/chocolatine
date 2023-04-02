@@ -10,29 +10,29 @@ env:
   MIRROR_URL: "git@github.com:EpitechPromo2027/B-DOP-200-STG-2-1-chocolatine-iness.el-atouani.git"
   EXECUTABLES: ""
 
-check_program_compilation:
-  name: "Compile program"
-  runs-on: ubuntu-latest
-  container:
-    image: epitechcontent/epitest-docker
-  steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-
-    - name: Compile program
-      run: make -j $(nproc)
-      timeout-minutes: 2
-
-    - name: Run make clean
-      run: make clean
-
-    - name: Verify executables
-      run: |
-        for exec in ${EXECUTABLES//,/ }; do
-          [[ -f $exec ]] && [[ -x $exec ]] || exit 1
-        done
-
 jobs:
+  check_program_compilation:
+    name: "Compile program"
+    runs-on: ubuntu-latest
+    container:
+      image: epitechcontent/epitest-docker
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Compile program
+        run: make -j $(nproc)
+        timeout-minutes: 2
+
+      - name: Run make clean
+        run: make clean
+
+      - name: Verify executables
+        run: |
+          for exec in ${EXECUTABLES//,/ }; do
+            [[ -f $exec ]] && [[ -x $exec ]] || exit 1
+          done
+
   mirror:
     name: mirror to epitech
     needs: check_program_compilation
@@ -45,3 +45,4 @@ jobs:
         with:
           target_repo_url: ${{ env.MIRROR_URL }}
           ssh_private_key: ${{ secrets.GIT_SSH_PRIVATE_KEY }}
+
