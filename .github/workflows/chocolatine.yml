@@ -10,39 +10,38 @@ env:
   MIRROR_URL: "git@github.com:EpitechPromo2027/B-DOP-200-STG-2-1-chocolatine-iness.el-atouani.git"
   EXECUTABLES: ""
 
-  check_program_compilation:
-     name: "Compile program"
+check_program_compilation:
+  name: "Compile program"
+  runs-on: ubuntu-latest
+  container:
+    image: epitechcontent/epitest-docker
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Compile program
+      run: make -j $(nproc)
+      timeout-minutes: 2
+
+    - name: Run make clean
+      run: make clean
+
+    - name: Verify executables
+      run: |
+        for exec in ${EXECUTABLES//,/ }; do
+          [[ -f $exec ]] && [[ -x $exec ]] || exit 1
+        done
+
+jobs:
+  mirror:
+    name: mirror to epitech
+    needs: check_program_compilation
     runs-on: ubuntu-latest
-    container:
-      image: epitechcontent/epitest-docker
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Compile program
-        run: make -j $(nproc)
-        timeout-minutes: 2
-
-      - name: Run make clean
-        run: make clean
-
-      - name: Verify executables
-        run: |
-          for exec in ${EXECUTABLES//,/ }; do
-            [[ -f $exec ]] && [[ -x $exec ]] || exit 1
-          done
-
-jobs : 
-  mirror : 
-    name : mirror to epitech 
-    needs: run_tests
-    runs-on : ubuntu-latest
-    steps :
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - uses : pixta-dev/repository-mirroring-action@v1
-        with: 
+      - uses: pixta-dev/repository-mirroring-action@v1
+        with:
           target_repo_url: ${{ env.MIRROR_URL }}
-          ssh_private_key: ${{secrets.GIT_SSH_PRIVATE_KEY}}
-         
+          ssh_private_key: ${{ secrets.GIT_SSH_PRIVATE_KEY }}
