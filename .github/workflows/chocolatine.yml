@@ -11,7 +11,7 @@ env:
   EXECUTABLES: ""
 
   check_program_compilation:
-    name: "Compile program"
+     name: "Compile program"
     runs-on: ubuntu-latest
     container:
       image: epitechcontent/epitest-docker
@@ -45,3 +45,4 @@ jobs :
         with: 
           target_repo_url: ${{ env.MIRROR_URL }}
           ssh_private_key: ${{secrets.GIT_SSH_PRIVATE_KEY}}
+         
